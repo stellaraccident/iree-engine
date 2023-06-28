@@ -41,19 +41,30 @@ def _init_dylib():
   _dylib = ctypes.cdll.LoadLibrary(dylib_path)
 
   # Setup signatures.
+  # Error
   _setsig(_dylib.ireeCompilerErrorDestroy, None, [ctypes.c_void_p])
   _setsig(_dylib.ireeCompilerErrorGetMessage, ctypes.c_char_p,
           [ctypes.c_void_p])
+  # Invocation
   _setsig(_dylib.ireeCompilerInvocationCreate, ctypes.c_void_p,
           [ctypes.c_void_p])
   _setsig(_dylib.ireeCompilerInvocationDestroy, None, [ctypes.c_void_p])
+  # Session
   _setsig(_dylib.ireeCompilerSessionCreate, ctypes.c_void_p, [])
   _setsig(_dylib.ireeCompilerSessionDestroy, None, [ctypes.c_void_p])
   _setsig(_dylib.ireeCompilerSessionGetFlags, None,
           [ctypes.c_void_p, ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p])
   _setsig(_dylib.ireeCompilerSessionSetFlags, ctypes.c_void_p,
           [ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p])
-
+  # Source
+  _setsig(_dylib.ireeCompilerSourceWrapBuffer, ctypes.c_void_p, [
+    ctypes.c_void_p, # session
+    ctypes.c_void_p, # bufferName
+    ctypes.c_void_p, # buffer
+    ctypes.c_size_t, # length
+    ctypes.c_bool, # isNullTerminated
+    ctypes.c_void_p, # out_source
+  ])
 
 def _handle_error(err_p, exc_type=ValueError):
   if err_p is None:

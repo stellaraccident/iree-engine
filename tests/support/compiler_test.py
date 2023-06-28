@@ -6,10 +6,10 @@
 
 import unittest
 
-from iree.jit.support.compiler_dl import *
+from iree.engine.support.compiler_dl import *
+from iree.engine.support.compiler_api import *
 
-
-class FlagsTest(unittest.TestCase):
+class DlFlagsTest(unittest.TestCase):
 
   def testDefaultFlags(self):
     session = Session()
@@ -40,11 +40,16 @@ class FlagsTest(unittest.TestCase):
     with self.assertRaises(ValueError):
       session.set_flags("--does-not-exist=1")
 
-class InvocationTest(unittest.TestCase):
+class DlInvocationTest(unittest.TestCase):
 
   def testCreate(self):
     session = Session()
     inv = session.invocation()
+
+class CompilerAPITest(unittest.TestCase):
+
+  def testCreate(self):
+    compiler = Compiler()
 
 
 if __name__ == "__main__":

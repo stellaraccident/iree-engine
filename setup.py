@@ -10,11 +10,11 @@ import os
 from setuptools import find_namespace_packages, setup
 
 setup(
-    name=f"iree-jit",
+    name=f"iree-engine",
     version=f"0.1",
     packages=find_namespace_packages(include=[
-        "iree.jit",
-        "iree.jit.*",
+        "iree.engine",
+        "iree.engine.*",
     ],),
     install_requires=[
         "numpy",
