@@ -6,6 +6,8 @@
 
 """Dynamic library binding to libIREECompiler.so, using ctypes."""
 
+# TODO: Upstream this to IREE.
+
 from ctypes import *
 from enum import IntEnum
 from pathlib import Path

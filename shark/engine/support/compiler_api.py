@@ -4,6 +4,8 @@
 # See https://llvm.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
+# TODO: Upstream this to IREE.
+
 from contextlib import closing
 from pathlib import Path
 from typing import Sequence, Optional, Union

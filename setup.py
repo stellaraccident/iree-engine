@@ -10,11 +10,11 @@ import os
 from setuptools import find_namespace_packages, setup
 
 setup(
-    name=f"iree-engine",
+    name=f"shark-engine",
     version=f"0.1",
     packages=find_namespace_packages(include=[
-        "iree.engine",
-        "iree.engine.*",
+        "shark.engine",
+        "shark.engine.*",
     ],),
     install_requires=[
         "numpy",
@@ -23,9 +23,9 @@ setup(
     ],
     entry_points={
         "torch_dynamo_backends": [
-            "iree_cuda = iree.engine.dynamo.backends:cuda",
-            "iree_cpu_sync = iree.engine.dynamo.backends:cpu_sync",
-            "iree_cpu = iree.engine.dynamo.backends:cpu_threaded",
+            "iree_cuda = shark.engine.dynamo.backends:cuda",
+            "iree_cpu_sync = shark.engine.dynamo.backends:cpu_sync",
+            "iree_cpu = shark.engine.dynamo.backends:cpu_threaded",
         ],
     },
     extras_require={
