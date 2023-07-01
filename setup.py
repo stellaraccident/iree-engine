@@ -21,6 +21,13 @@ setup(
         #"iree-compiler",
         #"iree-runtime",
     ],
+    entry_points={
+        "torch_dynamo_backends": [
+            "iree_cuda = iree.engine.dynamo.backends:cuda",
+            "iree_cpu_sync = iree.engine.dynamo.backends:cpu_sync",
+            "iree_cpu = iree.engine.dynamo.backends:cpu_threaded",
+        ],
+    },
     extras_require={
     },
 )
