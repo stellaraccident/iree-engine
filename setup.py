@@ -23,9 +23,7 @@ setup(
     ],
     entry_points={
         "torch_dynamo_backends": [
-            "iree_cuda = shark_engine.dynamo.backends:cuda",
-            "iree_cpu_sync = shark_engine.dynamo.backends:cpu_sync",
-            "iree_cpu = shark_engine.dynamo.backends:cpu_threaded",
+            "iree_cpu = shark_engine.dynamo.backends.cpu:backend",
         ],
     },
     extras_require={
