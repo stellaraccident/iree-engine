@@ -13,8 +13,8 @@ setup(
     name=f"shark-engine",
     version=f"0.1",
     packages=find_namespace_packages(include=[
-        "shark.engine",
-        "shark.engine.*",
+        "shark_engine",
+        "shark_engine.*",
     ],),
     install_requires=[
         "numpy",
@@ -23,9 +23,9 @@ setup(
     ],
     entry_points={
         "torch_dynamo_backends": [
-            "iree_cuda = shark.engine.dynamo.backends:cuda",
-            "iree_cpu_sync = shark.engine.dynamo.backends:cpu_sync",
-            "iree_cpu = shark.engine.dynamo.backends:cpu_threaded",
+            "iree_cuda = shark_engine.dynamo.backends:cuda",
+            "iree_cpu_sync = shark_engine.dynamo.backends:cpu_sync",
+            "iree_cpu = shark_engine.dynamo.backends:cpu_threaded",
         ],
     },
     extras_require={

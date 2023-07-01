@@ -11,8 +11,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from shark.engine.support.compiler_dl import *
-from shark.engine.support.compiler_api import *
+from shark_engine.support.compiler_dl import *
+from shark_engine.support.compiler_api import *
 
 
 class DlFlagsTest(unittest.TestCase):
