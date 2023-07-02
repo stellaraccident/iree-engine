@@ -159,13 +159,14 @@ class Output:
 
     def __init__(self, output_p: c_void_p):
         self._output_p = output_p
+        self._local_dylib = _dylib
 
     def __del__(self):
         self.close()
 
     def close(self):
         if self._output_p:
-            _dylib.ireeCompilerOutputDestroy(self._output_p)
+            self._local_dylib.ireeCompilerOutputDestroy(self._output_p)
             self._output_p = None
 
     @staticmethod
@@ -209,6 +210,7 @@ class Source:
         self._session: c_void_p = session  # Keeps ref alive.
         self._source_p: c_void_p = source_p
         self._backing_ref = backing_ref
+        self._local_dylib = _dylib
 
     def __del__(self):
         self.close()
@@ -217,7 +219,7 @@ class Source:
         if self._source_p:
             s = self._source_p
             self._source_p = c_void_p()
-            _dylib.ireeCompilerSourceDestroy(s)
+            self._local_dylib.ireeCompilerSourceDestroy(s)
             self._backing_ref = None
             self._session = c_void_p()
 
@@ -267,13 +269,14 @@ class Invocation:
         self._session = session
         self._inv_p = _dylib.ireeCompilerInvocationCreate(self._session._session_p)
         self._sources: List[Source] = []
+        self._local_dylib = _dylib
 
     def __del__(self):
         self.close()
 
     def close(self):
         if self._inv_p:
-            _dylib.ireeCompilerInvocationDestroy(self._inv_p)
+            self._local_dylib.ireeCompilerInvocationDestroy(self._inv_p)
             self._inv_p = c_void_p()
             for s in self._sources:
                 s.close()
@@ -345,10 +348,13 @@ def _probe_iree_compiler_dylib() -> str:
 class _GlobalInit:
     def __init__(self):
         _init_dylib()
-        _dylib.ireeCompilerGlobalInitialize()
+        # Cache locally so as to not have it go out of scope first
+        # during shutdown.
+        self.local_dylib = _dylib
+        self.local_dylib.ireeCompilerGlobalInitialize()
 
     def __del__(self):
-        _dylib.ireeCompilerGlobalShutdown()
+        self.local_dylib.ireeCompilerGlobalShutdown()
 
 
 # Keep one reference for the life of the module.

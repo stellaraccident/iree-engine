@@ -18,8 +18,10 @@ from torch.func import functionalize
 import torch_mlir
 from torch_mlir.dynamo import make_simple_dynamo_backend
 
+
 class ScriptImporter:
-    def __init__(self):
+    def __init__(self, text_mode: bool = False):
+        self.text_mode = text_mode
         # Whether the output tuple was unwrapped to a single element.
         self.was_unwrapped: bool = False
         # Indices in the output that should be None (sorted).
@@ -28,12 +30,13 @@ class ScriptImporter:
     def __call__(self, fx_g: torch.fx.GraphModule, inputs: tuple) -> bytes:
         self._preprocess_fx(fx_g)
         ts_g = self._script_fx(fx_g, inputs)
-        mlir_module = torch_mlir.compile(
-            ts_g, inputs, output_type="linalg-on-tensors"
-        )
-        #print(mlir_module)
+        mlir_module = torch_mlir.compile(ts_g, inputs, output_type="linalg-on-tensors")
+        # print(mlir_module)
         stream = io.BytesIO()
-        mlir_module.operation.write_bytecode(stream)
+        if self.text_mode:
+            mlir_module.operation.print(stream, binary=True, enable_debug_info=True)
+        else:
+            mlir_module.operation.write_bytecode(stream)
         return stream.getvalue()
 
     def _preprocess_fx(self, fx_g: torch.fx.GraphModule):
@@ -50,6 +53,7 @@ class ScriptImporter:
         strip_overloads(gm)
         ts_g = torch.jit.script(gm)
         return ts_g
+
 
 @functools.lru_cache
 def default_decompositions():
@@ -70,13 +74,12 @@ def default_decompositions():
         ]
     )
 
+
 def _remove_nones(fx_g: torch.fx.GraphModule) -> List[int]:
     removed_indexes = []
     for node in fx_g.graph.nodes:
         if node.op == "output":
-            assert (
-                len(node.args) == 1
-            ), "Output node must have a single argument"
+            assert len(node.args) == 1, "Output node must have a single argument"
             node_arg = node.args[0]
             if isinstance(node_arg, (list, tuple)):
                 node_arg = list(node_arg)
@@ -96,6 +99,7 @@ def _remove_nones(fx_g: torch.fx.GraphModule) -> List[int]:
     removed_indexes.sort()
     return removed_indexes
 
+
 def _unwrap_single_tuple_return(fx_g: torch.fx.GraphModule) -> bool:
     """
     Replace tuple with tuple element in functions that return one-element tuples.
@@ -104,9 +108,7 @@ def _unwrap_single_tuple_return(fx_g: torch.fx.GraphModule) -> bool:
     unwrapped_tuple = False
     for node in fx_g.graph.nodes:
         if node.op == "output":
-            assert (
-                len(node.args) == 1
-            ), "Output node must have a single argument"
+            assert len(node.args) == 1, "Output node must have a single argument"
             node_arg = node.args[0]
             if isinstance(node_arg, tuple):
                 if len(node_arg) == 1:

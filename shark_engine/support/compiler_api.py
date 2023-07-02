@@ -29,6 +29,9 @@ class Compiler:
     def set_flags(self, *flags: Sequence[str]):
         self._session.set_flags(*flags)
 
+    def get_flags(self) -> Sequence[str]:
+        return self._session.get_flags()
+
     def load_buffer(self, buffer, *, buffer_name: Optional[str]) -> "Pipeline":
         """Opens a source backed by a buffer in memory."""
         source = dl.Source.wrap_buffer(self._session, buffer, buffer_name=buffer_name)
